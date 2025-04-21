@@ -4,8 +4,12 @@ const ctx = canvas.getContext('2d');
 
 const TILE_SIZE = 32;
 let mapData = null;
-let tilesetImage = new Image();
+
+const tilesetImage = new Image();
 tilesetImage.src = 'tileset.png';
+
+const playerImage = new Image();
+playerImage.src = 'player.png';
 
 // Игрок
 const player = {
@@ -93,8 +97,7 @@ function drawMap() {
 }
 
 function drawPlayer() {
-    ctx.fillStyle = '#f0f000';
-    ctx.fillRect(player.x, player.y, player.width, player.height);
+    ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
 }
 
 function gameLoop() {
