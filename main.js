@@ -9,9 +9,13 @@ const tilesetImage = new Image();
 tilesetImage.src = 'tileset.png';
 
 const playerImage = new Image();
-playerImage.src = 'player.png';
+playerImage.src = 'player_walk.png';
 
-// Игрок
+const FRAME_COUNT = 4;
+let currentFrame = 0;
+let frameTimer = 0;
+const FRAME_INTERVAL = 10; // каждые 10 тиков
+
 const player = {
     x: 64,
     y: 0,
@@ -54,23 +58,28 @@ function checkCollision(px, py) {
 
 function updatePlayer() {
     player.dx = 0;
-    if (keys['ArrowLeft'] || keys['a']) player.dx = -player.speed;
-    if (keys['ArrowRight'] || keys['d']) player.dx = player.speed;
+    let moving = false;
+    if (keys['ArrowLeft'] || keys['a']) {
+        player.dx = -player.speed;
+        moving = true;
+    }
+    if (keys['ArrowRight'] || keys['d']) {
+        player.dx = player.speed;
+        moving = true;
+    }
 
-    player.dy += 0.5; // gravity
+    player.dy += 0.5;
 
     if ((keys['ArrowUp'] || keys['w']) && player.onGround) {
         player.dy = player.jumpPower;
         player.onGround = false;
     }
 
-    // Horizontal move
     player.x += player.dx;
     if (checkCollision(player.x, player.y)) {
         player.x -= player.dx;
     }
 
-    // Vertical move
     player.y += player.dy;
     if (checkCollision(player.x, player.y)) {
         player.y -= player.dy;
@@ -78,6 +87,17 @@ function updatePlayer() {
         player.onGround = true;
     } else {
         player.onGround = false;
+    }
+
+    // Анимация
+    if (moving) {
+        frameTimer++;
+        if (frameTimer >= FRAME_INTERVAL) {
+            currentFrame = (currentFrame + 1) % FRAME_COUNT;
+            frameTimer = 0;
+        }
+    } else {
+        currentFrame = 0;
     }
 }
 
@@ -97,7 +117,7 @@ function drawMap() {
 }
 
 function drawPlayer() {
-    ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
+    ctx.drawImage(playerImage, currentFrame * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE, player.x, player.y, TILE_SIZE, TILE_SIZE);
 }
 
 function gameLoop() {
